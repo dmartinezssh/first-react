@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Formik } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 
 export const Auth = () => {
     const [formularioEnviado, setFormularioEnviado] = useState(false);
@@ -7,7 +7,8 @@ export const Auth = () => {
         <Formik
             initialValues={{
                 username: '',
-                password: ''
+                password: '',
+                sexo: ''
             }}
             validate={(valores) => {
                 let errores = {};
@@ -20,6 +21,10 @@ export const Auth = () => {
                 } else if(valores.password.length < 6) {
                     errores.password = 'La contraseña no debe ser menor a 6 caracteres'
                 }
+
+                if(!valores.sexo) {
+                    errores.sexo = 'Por favor seleccione un sexo';
+                }
                 return errores;
             }}
             onSubmit={(valores, { resetForm }) => {
@@ -29,38 +34,51 @@ export const Auth = () => {
                 setTimeout(() => setFormularioEnviado(false), 1500);
             }}
         >
-            {( {values, touched, errors, handleChange, handleBlur, handleSubmit} ) => (    
-                <form className="login" onSubmit={handleSubmit}>
+            {( {errors} ) => (    
+                <Form className="formulario">
                     <div>
                         <label htmlFor="username">Usuario</label>
-                        <input 
+                        <Field 
                             type="text" 
                             id="username" 
                             name="username" 
                             placeholder="Usuario" 
                             autoComplete="off" 
-                            value={values.username}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
                         />
-                        {errors.username && touched.username && <div className="error">{errors.username}</div>}
+                        <ErrorMessage name="username" component={() =><div className="error">{errors.username}</div>} />
                     </div>
                     <div>
                         <label htmlFor="password">Password</label>
-                        <input 
+                        <Field 
                             type="password" 
                             id="password" 
                             name="password" 
                             placeholder="Password" 
-                            value={values.password}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
                         />
-                        {errors.password && touched.password && <div className="error">{errors.password}</div>}
+                        <ErrorMessage name="password" component={() => <div className="error">{errors.password}</div>} />
                     </div>
+                    {/* <div>
+                        <Field name="country" as="select">
+                            <option value="mx">México</option>
+                            <option value="co">Colombia</option>
+                            <option value="us">Estados Unidos</option>
+                        </Field>
+                    </div>
+                    <div>
+                        <label>
+                            <Field type="radio" name="sexo" value="hombre" /> Hombre
+                        </label>
+                        <label>
+                            <Field type="radio" name="sexo" value="mujer" /> Mujer
+                        </label>
+                        <ErrorMessage name="sexo" component={() => <div className="error">{errors.sexo}</div>} />
+                    </div>
+                    <div>
+                        <Field name="mensaje" as="textarea" />
+                    </div> */}
                     <button type="submit">Enviar</button>
                     {formularioEnviado &&<p className="exito">Formulario enviado con exito!</p>}
-                </form>
+                </Form>
             )}
         </Formik>
     </>
