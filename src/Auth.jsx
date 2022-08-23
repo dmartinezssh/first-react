@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { usersService } from './api/users.service';
 
 export const Auth = () => {
     const [formularioEnviado, setFormularioEnviado] = useState(false);
@@ -7,8 +8,7 @@ export const Auth = () => {
         <Formik
             initialValues={{
                 username: '',
-                password: '',
-                sexo: ''
+                password: ''
             }}
             validate={(valores) => {
                 let errores = {};
@@ -22,16 +22,19 @@ export const Auth = () => {
                     errores.password = 'La contraseña no debe ser menor a 6 caracteres'
                 }
 
-                if(!valores.sexo) {
+                /* if(!valores.sexo) {
                     errores.sexo = 'Por favor seleccione un sexo';
-                }
+                } */
                 return errores;
             }}
-            onSubmit={(valores, { resetForm }) => {
+            onSubmit={async (valores, { resetForm }) => {
                 resetForm();
-                console.log('Formulario enviado', valores)
                 setFormularioEnviado(true);
                 setTimeout(() => setFormularioEnviado(false), 1500);
+
+                const users = await usersService.post('auth/login', valores)
+                    .catch(({response}) => console.error(response.data.message));
+                console.log(users.data);
             }}
         >
             {( {errors} ) => (    
