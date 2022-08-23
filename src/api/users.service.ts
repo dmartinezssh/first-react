@@ -9,5 +9,5 @@ import axios from 'axios'
 } */
 
 export const usersService = axios.create({
-    baseURL: 'http://172.108.1.24:18001/api/v1/'
+    baseURL: 'http://172.108.1.24:18001/api/v1/',
 });

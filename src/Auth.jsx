@@ -1,9 +1,13 @@
 import { useState } from 'react'
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { usersService } from './api/users.service';
+import { useAuth } from './useAuth';
+import { useNavigate } from 'react-router-dom';
 
 export const Auth = () => {
     const [formularioEnviado, setFormularioEnviado] = useState(false);
+    const auth = useAuth()
+    const navigate = useNavigate();
     return <>
         <Formik
             initialValues={{
@@ -21,10 +25,6 @@ export const Auth = () => {
                 } else if(valores.password.length < 6) {
                     errores.password = 'La contraseña no debe ser menor a 6 caracteres'
                 }
-
-                /* if(!valores.sexo) {
-                    errores.sexo = 'Por favor seleccione un sexo';
-                } */
                 return errores;
             }}
             onSubmit={async (valores, { resetForm }) => {
@@ -32,9 +32,10 @@ export const Auth = () => {
                 setFormularioEnviado(true);
                 setTimeout(() => setFormularioEnviado(false), 1500);
 
-                const users = await usersService.post('auth/login', valores)
+                const users = await usersService.post('auth/login', valores, { params: { }, headers: { 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9'} })
                     .catch(({response}) => console.error(response.data.message));
-                console.log(users.data);
+                auth.login(true);
+                navigate('/search')
             }}
         >
             {( {errors} ) => (    
@@ -60,25 +61,6 @@ export const Auth = () => {
                         />
                         <ErrorMessage name="password" component={() => <div className="error">{errors.password}</div>} />
                     </div>
-                    {/* <div>
-                        <Field name="country" as="select">
-                            <option value="mx">México</option>
-                            <option value="co">Colombia</option>
-                            <option value="us">Estados Unidos</option>
-                        </Field>
-                    </div>
-                    <div>
-                        <label>
-                            <Field type="radio" name="sexo" value="hombre" /> Hombre
-                        </label>
-                        <label>
-                            <Field type="radio" name="sexo" value="mujer" /> Mujer
-                        </label>
-                        <ErrorMessage name="sexo" component={() => <div className="error">{errors.sexo}</div>} />
-                    </div>
-                    <div>
-                        <Field name="mensaje" as="textarea" />
-                    </div> */}
                     <button type="submit">Enviar</button>
                     {formularioEnviado &&<p className="exito">Formulario enviado con exito!</p>}
                 </Form>

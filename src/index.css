@@ -91,3 +91,9 @@ body {
 .formulario input[type="radio"] {
 	width: auto;
 }
+
+.is-active {
+	font-weight: 700;
+	pointer-events: none;
+	color: #0051ff;
+}
